@@ -43,6 +43,23 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Icons from '96 retro theme */
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: 'Times New Roman', Times, serif;
+  --font-mono: 'Courier New', Courier, monospace;
+
+  --color-win: #c0c0c0;
+  --color-win-shadow: #808080;
+  --color-win-light: #ffffff;
+  --color-navy: #000080;
+  --color-navy-fade: #7f9db9;
+  --color-desktop: #008080;
+  --color-ie-link: #0000ee;
+  --color-ie-visited: #551a8b;
+  --color-hween-orange: #ff8c00;
+  --color-hween-purple: #8a2be2;
+  --color-toxic: #39ff14;
 }
 
 :root {
@@ -158,6 +175,141 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-desktop);
+    color: #000;
+    font-family: var(--font-sans);
   }
+}
+
+/* ============================================================
+   Windows 95 / Internet Explorer 3.0 UI primitives
+   ============================================================ */
+
+/* Raised bevel (panels, buttons at rest) */
+.bevel-out {
+  border: none;
+  box-shadow:
+    inset -1px -1px 0 0 #000000,
+    inset 1px 1px 0 0 #ffffff,
+    inset -2px -2px 0 0 #808080,
+    inset 2px 2px 0 0 #dfdfdf;
+}
+
+/* Sunken bevel (input fields, content wells) */
+.bevel-in {
+  border: none;
+  box-shadow:
+    inset -1px -1px 0 0 #ffffff,
+    inset 1px 1px 0 0 #808080,
+    inset -2px -2px 0 0 #dfdfdf,
+    inset 2px 2px 0 0 #000000;
+}
+
+/* Thin sunken line (status bar cells) */
+.bevel-thin-in {
+  box-shadow:
+    inset -1px -1px 0 0 #ffffff,
+    inset 1px 1px 0 0 #808080;
+}
+
+/* Classic 95 push button */
+.btn95 {
+  background: #c0c0c0;
+  color: #000;
+  font-family: var(--font-sans);
+  padding: 3px 10px;
+  border: none;
+  box-shadow:
+    inset -1px -1px 0 0 #000000,
+    inset 1px 1px 0 0 #ffffff,
+    inset -2px -2px 0 0 #808080,
+    inset 2px 2px 0 0 #dfdfdf;
+  cursor: pointer;
+  user-select: none;
+}
+.btn95:active,
+.btn95[data-pressed='true'] {
+  box-shadow:
+    inset 1px 1px 0 0 #000000,
+    inset -1px -1px 0 0 #ffffff,
+    inset 2px 2px 0 0 #808080,
+    inset -2px -2px 0 0 #dfdfdf;
+  padding: 4px 9px 2px 11px;
+}
+.btn95:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+
+/* Title bar for windows */
+.titlebar {
+  background: var(--color-navy);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+.titlebar-inactive {
+  background: var(--color-win-shadow);
+}
+
+/* Blinking element */
+@keyframes blink96 {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.blink {
+  animation: blink96 1s steps(1, start) infinite;
+}
+
+/* Old-school underlined link */
+.link96 {
+  color: var(--color-ie-link);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link96:visited {
+  color: var(--color-ie-visited);
+}
+.link96:hover {
+  color: #ff0000;
+}
+
+/* Dotted focus for menu items */
+.menu-item:hover {
+  background: var(--color-navy);
+  color: #fff;
+}
+
+/* Fake scrollbar track look for content well */
+.inset-well {
+  background: #fff;
+}
+
+/* Marquee */
+@keyframes marquee96 {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.marquee-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee96 18s linear infinite;
+}
+
+/* Loading bar segments */
+@keyframes loadbar96 {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+.loadbar-fill {
+  animation: loadbar96 2.4s ease-out forwards;
+}
+
+/* Reduce motion respect */
+@media (prefers-reduced-motion: reduce) {
+  .blink, .marquee-track, .loadbar-fill {
+    animation: none;
+  }
+  .blink { opacity: 1; }
+  .marquee-track { transform: none; }
 }
