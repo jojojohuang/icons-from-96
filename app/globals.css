@@ -45,8 +45,8 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 
   /* Icons from '96 retro theme */
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-serif: 'Times New Roman', Times, serif;
+  --font-sans: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', Times, serif;
   --font-mono: 'Courier New', Courier, monospace;
 
   --color-win: #c0c0c0;
@@ -178,6 +178,15 @@
     background-color: var(--color-desktop);
     color: #000;
     font-family: var(--font-sans);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    text-rendering: optimizeSpeed;
+    /* Slightly soft, washed-out CRT feel on hi-DPI screens */
+    filter: blur(0.4px) contrast(1.08) saturate(0.92);
+  }
+  img {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
   }
 }
 
@@ -258,7 +267,7 @@
   50%, 100% { opacity: 0; }
 }
 .blink {
-  animation: blink96 1s steps(1, start) infinite;
+  animation: blink96 3s steps(1, start) infinite;
 }
 
 /* Old-school underlined link */
@@ -293,7 +302,7 @@
 .marquee-track {
   display: inline-block;
   white-space: nowrap;
-  animation: marquee96 18s linear infinite;
+  animation: marquee96 36s linear infinite;
 }
 
 /* Loading bar segments */
