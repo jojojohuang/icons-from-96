@@ -20,18 +20,20 @@ const MENUS = ['File', 'Edit', 'View', 'Go', 'Favorites', 'Help']
 function ToolButton({
   icon,
   label,
+  iconId,
   onClick,
   title,
 }: {
   icon: ReactNode
   label: string
-  onClick?: () => void
+  iconId: string
+  onClick?: (id: string) => void
   title?: string
 }) {
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => onClick?.(iconId)}
       title={title ?? label}
       className="btn95 flex min-w-[46px] flex-col items-center gap-[2px] !px-2 !py-1 text-[10px] text-black"
     >
@@ -47,15 +49,28 @@ export function IeWindow({
   children,
   onRefresh,
   onSearch,
+  onIconClick,
 }: {
   children: ReactNode
   onRefresh?: () => void
   onSearch?: () => void
+  onIconClick?: (id: string) => void
 }) {
+  function handleIcon(id: string) {
+    if (id === 'ie-refresh') {
+      onRefresh?.()
+      return
+    }
+    if (id === 'ie-search') {
+      onSearch?.()
+      return
+    }
+    onIconClick?.(id)
+  }
+
   return (
     <div className="mx-auto w-full max-w-5xl">
       <div className="bevel-out bg-win p-[3px]">
-        {/* Window title bar */}
         <div className="titlebar flex items-center justify-between px-1 py-[3px]">
           <div className="flex min-w-0 items-center gap-1.5 pl-1">
             <span
@@ -81,39 +96,34 @@ export function IeWindow({
           </div>
         </div>
 
-        {/* Menu bar */}
         <div className="mt-[2px] flex items-center gap-0 px-1 text-[13px] text-black">
           {MENUS.map((m) => (
-            <span
+            <button
               key={m}
+              type="button"
+              onClick={() => handleIcon('ie-menu')}
               className="menu-item cursor-default px-2 py-[1px] leading-tight"
             >
               <u>{m[0]}</u>
               {m.slice(1)}
-            </span>
+            </button>
           ))}
         </div>
 
-        {/* Toolbar */}
         <div className="mt-[2px] flex flex-wrap items-center gap-[3px] border-y border-win-shadow bg-win px-1 py-1">
-          <ToolButton icon={<ArrowLeft size={18} />} label="Back" />
-          <ToolButton icon={<ArrowRight size={18} />} label="Forward" />
-          <ToolButton icon={<Octagon size={18} />} label="Stop" />
-          <ToolButton
-            icon={<RefreshCw size={18} />}
-            label="Refresh"
-            onClick={onRefresh}
-          />
-          <ToolButton icon={<Home size={18} />} label="Home" onClick={onRefresh} />
+          <ToolButton icon={<ArrowLeft size={18} />} label="Back" iconId="ie-back" onClick={handleIcon} />
+          <ToolButton icon={<ArrowRight size={18} />} label="Forward" iconId="ie-forward" onClick={handleIcon} />
+          <ToolButton icon={<Octagon size={18} />} label="Stop" iconId="ie-stop" onClick={handleIcon} />
+          <ToolButton icon={<RefreshCw size={18} />} label="Refresh" iconId="ie-refresh" onClick={handleIcon} />
+          <ToolButton icon={<Home size={18} />} label="Home" iconId="ie-home" onClick={handleIcon} />
           <div className="mx-1 hidden h-8 w-[2px] bg-win-shadow sm:block" />
-          <ToolButton icon={<Search size={18} />} label="Search" onClick={onSearch} />
-          <ToolButton icon={<Star size={18} />} label="Favorites" />
-          <ToolButton icon={<Printer size={18} />} label="Print" />
-          <ToolButton icon={<Type size={18} />} label="Font" />
-          <ToolButton icon={<Mail size={18} />} label="Mail" />
+          <ToolButton icon={<Search size={18} />} label="Search" iconId="ie-search" onClick={handleIcon} />
+          <ToolButton icon={<Star size={18} />} label="Favorites" iconId="ie-favorites" onClick={handleIcon} />
+          <ToolButton icon={<Printer size={18} />} label="Print" iconId="ie-print" onClick={handleIcon} />
+          <ToolButton icon={<Type size={18} />} label="Font" iconId="ie-font" onClick={handleIcon} />
+          <ToolButton icon={<Mail size={18} />} label="Mail" iconId="ie-mail" onClick={handleIcon} />
         </div>
 
-        {/* Address bar */}
         <div className="flex items-center gap-2 bg-win px-2 py-1">
           <span className="text-[13px] text-black">Address</span>
           <div className="bevel-in flex min-w-0 flex-1 items-center gap-2 bg-white px-2 py-[3px]">
@@ -130,12 +140,10 @@ export function IeWindow({
           <span className="hidden text-[13px] text-black sm:block">Links</span>
         </div>
 
-        {/* Content well */}
         <div className="bevel-in bg-white p-0">
           <div className="max-h-[none] overflow-hidden">{children}</div>
         </div>
 
-        {/* Status bar */}
         <div className="mt-[3px] flex items-stretch gap-[3px] px-[1px] py-[1px]">
           <div className="bevel-thin-in flex-1 px-2 py-[2px] text-[12px] text-black">
             Done

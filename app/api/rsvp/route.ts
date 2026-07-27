@@ -25,14 +25,20 @@ export async function POST(req: NextRequest) {
     return bad('Please choose an attendance option.')
   }
 
+  const plusOne = Boolean(body.plusOne)
+  const guestName = String(body.guestName ?? '').trim()
+
+  if (plusOne && !guestName) {
+    return bad('Please enter your guest\'s name.')
+  }
+
   const input: RsvpInput = {
     name: name.slice(0, 200),
     email,
     attendance: attendanceRaw as RsvpInput['attendance'],
-    plusOne: Boolean(body.plusOne),
-    guestName: String(body.guestName ?? '').trim() || undefined,
+    plusOne,
+    guestName: guestName || undefined,
     dietary: String(body.dietary ?? '').trim() || undefined,
-    costumeIdea: String(body.costumeIdea ?? '').trim() || undefined,
     message: String(body.message ?? '').trim() || undefined,
   }
 

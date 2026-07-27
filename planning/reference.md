@@ -153,11 +153,12 @@ icons-from-96/
 │   ├── event-config.ts     # EDIT COPY HERE
 │   ├── notion.ts           # Notion API client for RSVP submissions
 │   └── utils.ts            # Utility helpers
+├── planning/               # Planning docs (this folder)
 ├── public/
 │   └── gallery/            # Gallery image files
 ├── .env.local              # NOTION_TOKEN, NOTION_DATABASE_ID (not committed)
 ├── .env.example            # Template for env vars
-└── PLANNING.md             # This file
+└── README.md               # Dev setup & Notion instructions
 ```
 
 ### Page flow (`app/page.tsx`)
@@ -227,3 +228,4 @@ Node 22+ (see `.nvmrc`).
 - Removed Tailwind `antialiased` from body for chunkier text
 - Marquee slowed from 18s → **36s**
 - Blink slowed from 1s → **3s** (affects all `.blink` elements site-wide)
+- All emoji removed from UI copy (replaced with ASCII where needed)

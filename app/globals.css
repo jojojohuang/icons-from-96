@@ -181,8 +181,11 @@
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     text-rendering: optimizeSpeed;
-    /* Slightly soft, washed-out CRT feel on hi-DPI screens */
+  }
+  .site-content {
+    /* CRT feel — on content only so fixed modals stay viewport-relative */
     filter: blur(0.4px) contrast(1.08) saturate(0.92);
+    min-height: 100%;
   }
   img {
     image-rendering: pixelated;

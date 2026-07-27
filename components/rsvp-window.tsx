@@ -8,9 +8,62 @@ import { event } from '@/lib/event-config'
 type Attendance = 'Yes' | 'No' | 'Maybe'
 type Status = 'idle' | 'submitting' | 'done' | 'error'
 
+const DIETARY_OPTIONS = ['Vegan', 'Vegetarian', 'Gluten free', 'Dairy free'] as const
+
 const inputClass =
   'bevel-in w-full bg-white px-2 py-[5px] font-sans text-[14px] text-black outline-none'
 const labelClass = 'mb-[2px] block font-sans text-[13px] font-bold text-black'
+
+function formatDietary(options: string[], other: string): string | undefined {
+  const parts = [...options]
+  const trimmedOther = other.trim()
+  if (trimmedOther) parts.push(`Other: ${trimmedOther}`)
+  return parts.length > 0 ? parts.join(', ') : undefined
+}
+
+function DietaryFields({
+  idPrefix,
+  optionName,
+  otherName,
+  label,
+}: {
+  idPrefix: string
+  optionName: string
+  otherName: string
+  label: string
+}) {
+  return (
+    <div className="bevel-out bg-win px-3 pb-2 pt-1">
+      <p className="mb-2 font-sans text-[13px] font-bold text-black">{label}</p>
+      <div className="flex flex-col gap-1">
+        {DIETARY_OPTIONS.map((option) => (
+          <label
+            key={option}
+            htmlFor={`${idPrefix}-${option}`}
+            className="flex items-center gap-2 text-[14px] text-black"
+          >
+            <input
+              id={`${idPrefix}-${option}`}
+              type="checkbox"
+              name={optionName}
+              value={option}
+            />
+            {option}
+          </label>
+        ))}
+      </div>
+      <div className="mt-2">
+        <input
+          id={`${idPrefix}-other`}
+          name={otherName}
+          placeholder="Other"
+          maxLength={200}
+          className={inputClass}
+        />
+      </div>
+    </div>
+  )
+}
 
 export function RsvpWindow({ onClose }: { onClose: () => void }) {
   const [status, setStatus] = useState<Status>('idle')
@@ -26,14 +79,37 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
     setStatus('submitting')
     setError('')
 
+    const plusOneChecked = data.get('plusOne') === 'on'
+    const guestName = String(data.get('guestName') ?? '').trim()
+
+    if (plusOneChecked && !guestName) {
+      setError('Please enter your guest\'s name.')
+      setStatus('error')
+      return
+    }
+
+    const dietaryOpts = data.getAll('dietary').map(String)
+    const dietaryOther = String(data.get('dietaryOther') ?? '')
+    const guestDietaryOpts = data.getAll('guestDietary').map(String)
+    const guestDietaryOther = String(data.get('guestDietaryOther') ?? '')
+
+    const yourDietary = formatDietary(dietaryOpts, dietaryOther)
+    const guestDietaryFormatted = formatDietary(guestDietaryOpts, guestDietaryOther)
+
+    const dietaryParts: string[] = []
+    if (yourDietary) dietaryParts.push(`You: ${yourDietary}`)
+    if (plusOneChecked && guestDietaryFormatted) {
+      dietaryParts.push(`Guest (${guestName}): ${guestDietaryFormatted}`)
+    }
+    const dietary = dietaryParts.length > 0 ? dietaryParts.join(' | ') : undefined
+
     const payload = {
       name: String(data.get('name') ?? ''),
       email: String(data.get('email') ?? ''),
       attendance,
-      plusOne,
-      guestName: String(data.get('guestName') ?? ''),
-      dietary: String(data.get('dietary') ?? ''),
-      costumeIdea: String(data.get('costumeIdea') ?? ''),
+      plusOne: plusOneChecked,
+      guestName: plusOneChecked ? guestName : '',
+      dietary,
       message: String(data.get('message') ?? ''),
     }
 
@@ -126,10 +202,10 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
           />
         </div>
 
-        <fieldset className="bevel-out bg-win px-3 py-2">
-          <legend className="px-1 font-sans text-[13px] font-bold text-black">
-            Attendance *
-          </legend>
+        <div className="bevel-out bg-win px-3 pb-2 pt-1">
+          <p className="mb-1 font-sans text-[13px] font-bold text-black">
+            Attendance <span className="text-red-600">*</span>
+          </p>
           <div className="flex flex-col gap-1">
             {(
               [
@@ -150,11 +226,19 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
               </label>
             ))}
           </div>
-        </fieldset>
+        </div>
+
+        <DietaryFields
+          idPrefix="dietary"
+          optionName="dietary"
+          otherName="dietaryOther"
+          label="Dietary requirements"
+        />
 
         <label className="flex items-center gap-2 text-[14px] text-black">
           <input
             type="checkbox"
+            name="plusOne"
             checked={plusOne}
             onChange={(e) => setPlusOne(e.target.checked)}
           />
@@ -162,27 +246,27 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
         </label>
 
         {plusOne && (
-          <div>
-            <label htmlFor="guestName" className={labelClass}>
-              Guest name
-            </label>
-            <input id="guestName" name="guestName" maxLength={120} className={inputClass} />
+          <div className="space-y-3 bevel-in bg-white p-3">
+            <div>
+              <label htmlFor="guestName" className={labelClass}>
+                Guest name <span className="text-red-600">*</span>
+              </label>
+              <input
+                id="guestName"
+                name="guestName"
+                required
+                maxLength={120}
+                className={inputClass}
+              />
+            </div>
+            <DietaryFields
+              idPrefix="guest-dietary"
+              optionName="guestDietary"
+              otherName="guestDietaryOther"
+              label="Guest dietary requirements"
+            />
           </div>
         )}
-
-        <div>
-          <label htmlFor="dietary" className={labelClass}>
-            Dietary requirements
-          </label>
-          <input id="dietary" name="dietary" maxLength={200} className={inputClass} />
-        </div>
-
-        <div>
-          <label htmlFor="costumeIdea" className={labelClass}>
-            Costume idea (optional — keep it secret if you like)
-          </label>
-          <input id="costumeIdea" name="costumeIdea" maxLength={200} className={inputClass} />
-        </div>
 
         <div>
           <label htmlFor="message" className={labelClass}>
