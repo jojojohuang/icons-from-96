@@ -7,8 +7,8 @@ export const event = {
   host: 'Jo',
   siteUrl: 'http://www.joshomepage.com/icons96',
   title: "ICONS FROM '96",
-  subtitle: 'Halloween Housewarming Party',
-  celebrating: ['30 years of Jo', '30 years of iconic things'],
+  subtitle: '30th Birthday x Halloween x Housewarming',
+  celebrating: ['30 years of Iconic Things', "Jo"],
   lastUpdated: 'October 31, 1996',
   rsvpDeadline: 'October 24, 2026',
 

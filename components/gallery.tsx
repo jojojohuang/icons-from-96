@@ -7,7 +7,7 @@ export function Gallery() {
         id="gallery-heading"
         className="mb-1 bg-navy px-2 py-1 text-center font-sans text-[16px] font-bold text-white"
       >
-        🖼 IMAGE ARCHIVE — CULTURAL ARTIFACTS
+        IMAGE ARCHIVE — CULTURAL ARTIFACTS
       </h2>
       <p className="mb-3 text-center font-serif text-[14px] text-black">
         Scanned relics recovered from 1996. Please do not right-click and Save As.
