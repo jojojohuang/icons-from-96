@@ -33,7 +33,7 @@ export default function Home() {
               id="msg-heading"
               className="mb-3 bg-navy px-2 py-1 text-center font-sans text-[16px] font-bold text-white"
             >
-              ✉ A MESSAGE FROM THE ARCHIVE
+              A MESSAGE FROM THE ARCHIVE
             </h2>
             <div className="bevel-in bg-white px-4 py-3">
               <p className="font-serif text-[16px] leading-relaxed text-black">

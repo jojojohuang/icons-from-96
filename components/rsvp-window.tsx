@@ -81,7 +81,7 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
             </p>
           </div>
           <p className="mt-3 font-sans text-[15px] text-black">
-            See you on Halloween 👻
+            See you on Halloween
           </p>
           <div className="mt-4 flex justify-center">
             <button type="button" onClick={onClose} className="btn95 text-[14px]">
@@ -213,7 +213,7 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
             role="alert"
             className="bevel-in bg-white px-2 py-2 font-mono text-[12px] text-red-700"
           >
-            ⚠ {error}
+            ERROR: {error}
           </div>
         )}
 

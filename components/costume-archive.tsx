@@ -14,7 +14,7 @@ export function CostumeArchive() {
         id="archive-heading"
         className="mb-1 bg-navy px-2 py-1 text-center font-sans text-[16px] font-bold text-white"
       >
-        📁 1996_ARCHIVE — COSTUME INSPIRATION
+        1996_ARCHIVE — COSTUME INSPIRATION
       </h2>
       <p className="mb-3 text-center font-serif text-[14px] text-black">
         Double-click a folder to browse iconic things from 1996.
