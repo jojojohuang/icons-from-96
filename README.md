@@ -65,7 +65,11 @@ Edit `.env.local` and set:
 3. Open the RSVP database in Notion, click **⋯ → Connections**, and connect your integration with **Can edit** access.
 4. If you use your own database instead of the default, copy its ID from the URL (`notion.so/.../<database_id>?v=...`) into `NOTION_DATABASE_ID`.
 
-The database should have these properties: `Name` (title), `Email`, `Attendance` (select: Yes/No/Maybe), `Plus One` (checkbox), `Guest Name`, `Dietary`, `Costume Idea`, `Message`, `Exhibit Number` (number).
+Each row is **one person**. A plus-one is a second row with `Plus One Of` set to the submitter’s name.
+
+The database should have these properties: `Name` (title), `Email`, `Attendance` (select: Yes/No/Maybe), `Dietary`, `Costume Idea`, `Message`, `Exhibit Number` (number), `Plus One Of` (rich text).
+
+Add `Plus One Of` in Notion before deploying this change. Older `Plus One` / `Guest Name` columns can stay for existing rows; new RSVPs do not write them.
 
 Without `NOTION_TOKEN`, the site still runs locally, but RSVP submissions will fail with a "not connected yet" message.
 

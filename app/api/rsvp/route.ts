@@ -39,12 +39,13 @@ export async function POST(req: NextRequest) {
     plusOne,
     guestName: guestName || undefined,
     dietary: String(body.dietary ?? '').trim() || undefined,
+    guestDietary: String(body.guestDietary ?? '').trim() || undefined,
     message: String(body.message ?? '').trim() || undefined,
   }
 
   try {
-    const { exhibitNumber } = await createRsvp(input)
-    return NextResponse.json({ ok: true, exhibitNumber })
+    const { exhibitNumber, guestExhibitNumber } = await createRsvp(input)
+    return NextResponse.json({ ok: true, exhibitNumber, guestExhibitNumber })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error'
     if (msg.includes('NOTION_TOKEN')) {
