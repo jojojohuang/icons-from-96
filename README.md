@@ -62,7 +62,7 @@ Edit `.env.local` and set:
 
 1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations) and create an internal integration.
 2. Copy the **Internal Integration Secret** into `NOTION_TOKEN` in `.env.local`.
-3. Open the RSVP database in Notion, click **⋯ → Connections**, and connect your integration with **Can edit** access.
+3. Open the RSVP database in Notion, click **⋯ → Connections**, and connect your integration with **Can edit** access. Re-check this after changing columns.
 4. If you use your own database instead of the default, copy its ID from the URL (`notion.so/.../<database_id>?v=...`) into `NOTION_DATABASE_ID`.
 
 Each row is **one person**. A plus-one is a second row with `Plus One Of` set to the submitter’s name.

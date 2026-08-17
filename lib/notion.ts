@@ -2,6 +2,7 @@
 
 const NOTION_API = 'https://api.notion.com/v1'
 const NOTION_VERSION = '2022-06-28'
+const NOTION_VERSION_DATABASE = '2025-09-03'
 
 // The RSVP database created for this project. Override with env if you
 // recreate the database in your own workspace.
@@ -32,17 +33,17 @@ function token(): string {
   return t
 }
 
-function headers() {
+function headers(version = NOTION_VERSION) {
   return {
     Authorization: `Bearer ${token()}`,
-    'Notion-Version': NOTION_VERSION,
+    'Notion-Version': version,
     'Content-Type': 'application/json',
   }
 }
 
-function richText(value?: string) {
+function richText(value: string) {
   return {
-    rich_text: value ? [{ type: 'text', text: { content: value.slice(0, 1900) } }] : [],
+    rich_text: [{ type: 'text', text: { content: value.slice(0, 1900) } }],
   }
 }
 
@@ -54,6 +55,25 @@ type PersonPage = {
   message?: string
   plusOneOf?: string
   exhibitNumber: number
+}
+
+let cachedDataSourceId: string | undefined
+
+async function getDataSourceId(): Promise<string> {
+  if (process.env.NOTION_DATA_SOURCE_ID) return process.env.NOTION_DATA_SOURCE_ID
+  if (cachedDataSourceId) return cachedDataSourceId
+
+  const res = await fetch(`${NOTION_API}/databases/${DATABASE_ID}`, {
+    headers: headers(NOTION_VERSION_DATABASE),
+    cache: 'no-store',
+  })
+  const data = (await res.json()) as { data_sources?: { id: string }[] }
+  const id = data.data_sources?.[0]?.id
+  if (!id) {
+    throw new Error('Could not resolve Notion data source for the RSVP database')
+  }
+  cachedDataSourceId = id
+  return id
 }
 
 // Count existing rows so we can assign a sequential "EXHIBIT #" number.
@@ -73,22 +93,22 @@ async function countExhibits(): Promise<number> {
   }
 }
 
-async function createPersonPage(person: PersonPage): Promise<void> {
+async function createPersonPage(person: PersonPage, dataSourceId: string): Promise<void> {
   const properties: Record<string, unknown> = {
     Name: { title: [{ type: 'text', text: { content: person.name.slice(0, 200) } }] },
-    Email: { email: person.email || null },
     Attendance: { select: { name: person.attendance } },
-    Dietary: richText(person.dietary),
-    Message: richText(person.message),
-    'Plus One Of': richText(person.plusOneOf),
     'Exhibit Number': { number: person.exhibitNumber },
   }
+  if (person.email) properties.Email = { email: person.email }
+  if (person.dietary) properties.Dietary = richText(person.dietary)
+  if (person.message) properties.Message = richText(person.message)
+  if (person.plusOneOf) properties['Plus One Of'] = richText(person.plusOneOf)
 
   const res = await fetch(`${NOTION_API}/pages`, {
     method: 'POST',
     headers: headers(),
     body: JSON.stringify({
-      parent: { database_id: DATABASE_ID },
+      parent: { type: 'data_source_id', data_source_id: dataSourceId },
       properties,
     }),
     cache: 'no-store',
@@ -101,31 +121,37 @@ async function createPersonPage(person: PersonPage): Promise<void> {
 }
 
 export async function createRsvp(input: RsvpInput): Promise<CreateRsvpResult> {
-  const count = await countExhibits()
+  const [count, dataSourceId] = await Promise.all([countExhibits(), getDataSourceId()])
   const exhibitNumber = 42 + count
   const guestName = input.plusOne ? input.guestName?.trim() : undefined
 
-  await createPersonPage({
-    name: input.name,
-    email: input.email,
-    attendance: input.attendance,
-    dietary: input.dietary,
-    message: input.message,
-    exhibitNumber,
-  })
+  await createPersonPage(
+    {
+      name: input.name,
+      email: input.email,
+      attendance: input.attendance,
+      dietary: input.dietary,
+      message: input.message,
+      exhibitNumber,
+    },
+    dataSourceId,
+  )
 
   if (!guestName) {
     return { exhibitNumber }
   }
 
   const guestExhibitNumber = exhibitNumber + 1
-  await createPersonPage({
-    name: guestName,
-    attendance: input.attendance,
-    dietary: input.guestDietary,
-    plusOneOf: input.name,
-    exhibitNumber: guestExhibitNumber,
-  })
+  await createPersonPage(
+    {
+      name: guestName,
+      attendance: input.attendance,
+      dietary: input.guestDietary,
+      plusOneOf: input.name,
+      exhibitNumber: guestExhibitNumber,
+    },
+    dataSourceId,
+  )
 
   return { exhibitNumber, guestExhibitNumber }
 }
