@@ -40,7 +40,7 @@ export function EventInfo() {
           </Row>
           <Row label="DRESS CODE">
             <span className="font-sans font-black text-hween-orange">
-              ★ {event.dressCode.title} ★
+              {event.dressCode.title}
             </span>
             <br />
             <span className="text-[14px]">{event.dressCode.blurb}</span>

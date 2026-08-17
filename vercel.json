@@ -1,0 +1,5 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/ensure-v0-inject.mjs && next build",
+  "installCommand": "pnpm install"
+}

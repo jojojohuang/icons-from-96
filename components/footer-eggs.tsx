@@ -78,7 +78,7 @@ export function FooterEggs() {
         id="misc-heading"
         className="mb-3 bg-navy px-2 py-1 text-center font-sans text-[16px] font-bold text-white"
       >
-        ⚙ SYSTEM &amp; ARCHIVE TOOLS
+        SYSTEM &amp; ARCHIVE TOOLS
       </h2>
 
       {/* Housewarming facility status */}
@@ -176,7 +176,7 @@ export function FooterEggs() {
           width={460}
         >
           <p className="blink mb-2 text-center font-serif text-[18px] font-black text-hween-purple">
-            ✎ SIGN MY GUESTBOOK!!! ✎
+            SIGN MY GUESTBOOK!!!
           </p>
 
           <form onSubmit={signGuestbook} className="mb-3 space-y-2">

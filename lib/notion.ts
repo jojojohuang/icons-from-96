@@ -15,7 +15,6 @@ export type RsvpInput = {
   plusOne: boolean
   guestName?: string
   dietary?: string
-  costumeIdea?: string
   message?: string
 }
 
@@ -68,7 +67,6 @@ export async function createRsvp(input: RsvpInput): Promise<{ exhibitNumber: num
     'Plus One': { checkbox: input.plusOne },
     'Guest Name': richText(input.guestName),
     Dietary: richText(input.dietary),
-    'Costume Idea': richText(input.costumeIdea),
     Message: richText(input.message),
     'Exhibit Number': { number: exhibitNumber },
   }
