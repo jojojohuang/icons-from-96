@@ -15,7 +15,13 @@ export type RsvpInput = {
   plusOne: boolean
   guestName?: string
   dietary?: string
+  guestDietary?: string
   message?: string
+}
+
+export type CreateRsvpResult = {
+  exhibitNumber: number
+  guestExhibitNumber?: number
 }
 
 function token(): string {
@@ -40,6 +46,16 @@ function richText(value?: string) {
   }
 }
 
+type PersonPage = {
+  name: string
+  email?: string
+  attendance: RsvpInput['attendance']
+  dietary?: string
+  message?: string
+  plusOneOf?: string
+  exhibitNumber: number
+}
+
 // Count existing rows so we can assign a sequential "EXHIBIT #" number.
 async function countExhibits(): Promise<number> {
   try {
@@ -57,18 +73,15 @@ async function countExhibits(): Promise<number> {
   }
 }
 
-export async function createRsvp(input: RsvpInput): Promise<{ exhibitNumber: number }> {
-  const exhibitNumber = 42 + (await countExhibits())
-
+async function createPersonPage(person: PersonPage): Promise<void> {
   const properties: Record<string, unknown> = {
-    Name: { title: [{ type: 'text', text: { content: input.name.slice(0, 200) } }] },
-    Email: { email: input.email || null },
-    Attendance: { select: { name: input.attendance } },
-    'Plus One': { checkbox: input.plusOne },
-    'Guest Name': richText(input.guestName),
-    Dietary: richText(input.dietary),
-    Message: richText(input.message),
-    'Exhibit Number': { number: exhibitNumber },
+    Name: { title: [{ type: 'text', text: { content: person.name.slice(0, 200) } }] },
+    Email: { email: person.email || null },
+    Attendance: { select: { name: person.attendance } },
+    Dietary: richText(person.dietary),
+    Message: richText(person.message),
+    'Plus One Of': richText(person.plusOneOf),
+    'Exhibit Number': { number: person.exhibitNumber },
   }
 
   const res = await fetch(`${NOTION_API}/pages`, {
@@ -85,6 +98,34 @@ export async function createRsvp(input: RsvpInput): Promise<{ exhibitNumber: num
     const detail = await res.text()
     throw new Error(`Notion create failed (${res.status}): ${detail}`)
   }
+}
 
-  return { exhibitNumber }
+export async function createRsvp(input: RsvpInput): Promise<CreateRsvpResult> {
+  const count = await countExhibits()
+  const exhibitNumber = 42 + count
+  const guestName = input.plusOne ? input.guestName?.trim() : undefined
+
+  await createPersonPage({
+    name: input.name,
+    email: input.email,
+    attendance: input.attendance,
+    dietary: input.dietary,
+    message: input.message,
+    exhibitNumber,
+  })
+
+  if (!guestName) {
+    return { exhibitNumber }
+  }
+
+  const guestExhibitNumber = exhibitNumber + 1
+  await createPersonPage({
+    name: guestName,
+    attendance: input.attendance,
+    dietary: input.guestDietary,
+    plusOneOf: input.name,
+    exhibitNumber: guestExhibitNumber,
+  })
+
+  return { exhibitNumber, guestExhibitNumber }
 }

@@ -71,6 +71,7 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
   const [plusOne, setPlusOne] = useState(false)
   const [error, setError] = useState('')
   const [exhibit, setExhibit] = useState(42)
+  const [guestExhibit, setGuestExhibit] = useState<number | null>(null)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -93,23 +94,16 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
     const guestDietaryOpts = data.getAll('guestDietary').map(String)
     const guestDietaryOther = String(data.get('guestDietaryOther') ?? '')
 
-    const yourDietary = formatDietary(dietaryOpts, dietaryOther)
-    const guestDietaryFormatted = formatDietary(guestDietaryOpts, guestDietaryOther)
-
-    const dietaryParts: string[] = []
-    if (yourDietary) dietaryParts.push(`You: ${yourDietary}`)
-    if (plusOneChecked && guestDietaryFormatted) {
-      dietaryParts.push(`Guest (${guestName}): ${guestDietaryFormatted}`)
-    }
-    const dietary = dietaryParts.length > 0 ? dietaryParts.join(' | ') : undefined
-
     const payload = {
       name: String(data.get('name') ?? ''),
       email: String(data.get('email') ?? ''),
       attendance,
       plusOne: plusOneChecked,
       guestName: plusOneChecked ? guestName : '',
-      dietary,
+      dietary: formatDietary(dietaryOpts, dietaryOther),
+      guestDietary: plusOneChecked
+        ? formatDietary(guestDietaryOpts, guestDietaryOther)
+        : undefined,
       message: String(data.get('message') ?? ''),
     }
 
@@ -124,6 +118,9 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
         throw new Error(json.error ?? 'Submission failed.')
       }
       setExhibit(json.exhibitNumber ?? 42)
+      setGuestExhibit(
+        typeof json.guestExhibitNumber === 'number' ? json.guestExhibitNumber : null,
+      )
       setStatus('done')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.')
@@ -152,6 +149,11 @@ export function RsvpWindow({ onClose }: { onClose: () => void }) {
             <p className="my-1 text-[20px] font-black text-navy">
               EXHIBIT #{String(exhibit).padStart(3, '0')}
             </p>
+            {guestExhibit != null && (
+              <p className="my-1 text-[16px] font-black text-navy">
+                +1 EXHIBIT #{String(guestExhibit).padStart(3, '0')}
+              </p>
+            )}
             <p>
               Status: <span className="font-bold text-green-700">ACTIVE</span>
             </p>
