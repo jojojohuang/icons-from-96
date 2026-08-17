@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "postinstall": "node scripts/ensure-v0-inject.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
